@@ -11,7 +11,7 @@
     <li>User: $userName</li>
     <li>Maven Command: $mavenCmd</li>
     <li>Build URL: <a href="$buildUrl">buildUrl</a></li>
-    <% if (binding["someVar"]) { %>
+    <% if (binding["testVar"] != "") { %>
     <li>Var Value: $testVar</li>
     <% } %>
 </ul>
