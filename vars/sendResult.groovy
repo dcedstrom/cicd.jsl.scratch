@@ -7,8 +7,8 @@ def call(Map config) {
             buildNumber    : env.BUILD_NUMBER,
             userName       : currentBuild.getBuildCauses()[0].userId,
             buildUrl       : env.BUILD_URL,
-            mavenCmd: params.maven_command,
-            testVar: someVar
+            mavenCmd       : params.maven_command,
+            testVar        : binding.getVariable('someVar')
     ]
 
     def render = renderTemplate(rawBody, binding)
