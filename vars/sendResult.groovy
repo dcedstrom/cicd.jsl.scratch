@@ -6,7 +6,8 @@ def call(Map config) {
             sourceBranch   : env.GIT_BRANCH,
             buildNumber    : env.BUILD_NUMBER,
             userName       : currentBuild.getBuildCauses()[0].userId,
-            buildUrl       : env.BUILD_URL
+            buildUrl       : env.BUILD_URL,
+            mavenCmd: params.maven_command
     ]
 
     def render = renderTemplate(rawBody, binding)
