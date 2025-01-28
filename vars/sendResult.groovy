@@ -8,12 +8,13 @@ def call(Map config) {
             userName       : currentBuild.getBuildCauses()[0].userId,
             buildUrl       : env.BUILD_URL,
             mavenCmd       : params.maven_command,
-            testVar        : config.someVar
+            testVar        : config.someVar,
+            condVar        : config.condVar ?: null
     ]
 
-    if (config.condVar) {
-        binding['condVar'] = config.condVar
-    }
+//    if (config.condVar) {
+//        binding['condVar'] = config.condVar
+//    }
     echo "Rendering template...."
     def render = renderTemplate(rawBody, binding)
     echo render
@@ -21,7 +22,7 @@ def call(Map config) {
     echo subjectLine
 
     emailExt body: render,
-        subject: subjectLine,
+            subject: subjectLine,
 //        to: params.emailRecipients
-        to: 'dedstrom@venerated.io'
+            to: 'dedstrom@venerated.io'
 }
