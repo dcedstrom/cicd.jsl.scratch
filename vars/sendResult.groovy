@@ -21,7 +21,7 @@ def call(Map config) {
     def subjectLine = "${env.JOB_BASE_NAME} - ${env.BUILD_NUMBER} - ${currentBuild.currentResult}"
     echo subjectLine
 
-    emailExt body: render,
+    emailext body: render,
             subject: subjectLine,
 //        to: params.emailRecipients
             to: 'dedstrom@venerated.io'
