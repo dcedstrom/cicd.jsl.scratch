@@ -12,11 +12,10 @@ def call(Map config) {
     ]
 
     if (config.condVar) {
-        binding.condVar = config.condVar
+        binding['condVar'] = config.condVar
     }
-
+    echo "Rendering template...."
     def render = renderTemplate(rawBody, binding)
-    // TODO: Stdout for testing, swap to email plugin
     echo render
     def subjectLine = "${env.JOB_BASE_NAME} - ${env.BUILD_NUMBER} - ${currentBuild.currentResult}"
     echo subjectLine
