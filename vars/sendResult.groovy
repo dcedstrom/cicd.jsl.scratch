@@ -24,5 +24,6 @@ def call(Map config) {
     emailext body: render,
             subject: subjectLine,
 //        to: params.emailRecipients
-            to: 'cicd@venerated.io'
+            to: 'cicd@venerated.io',
+            mimeType: 'text/html'
 }
