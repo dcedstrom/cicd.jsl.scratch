@@ -24,5 +24,5 @@ def call(Map config) {
     emailext body: render,
             subject: subjectLine,
 //        to: params.emailRecipients
-            to: 'dedstrom@venerated.io'
+            to: 'cicd@venerated.io'
 }
