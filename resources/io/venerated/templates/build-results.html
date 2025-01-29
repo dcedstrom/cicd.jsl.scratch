@@ -4,16 +4,17 @@
     <title>Jenkins Build Results - $applicationName</title>
 </head>
 <body>
+<h2>Jenkins Build Results — $applicationName</h2>
 <ul>
-    <li>Build Job: $applicationName</li>
-    <li>Source Branch: $sourceBranch</li>
-    <li>Build Number: $buildNumber</li>
-    <li>User: $userName</li>
-    <li>Maven Command: $mavenCmd</li>
-    <li>Build URL: <a href="$buildUrl">buildUrl</a></li>
-    <li>Test Variable: $testVar</li>
+    <li><b>Build Job:</b> $applicationName</li>
+    <li><b>Source Branch</b>: $sourceBranch</li>
+    <li><b>Build Number</b>: $buildNumber</li>
+    <li><b>User</b>: $userName</li>
+    <li><b>Maven Command</b>: $mavenCmd</li>
+    <li><b>Build URL</b>: <a href="$buildUrl">buildUrl</a></li>
+    <li><b>Test Variable</b>: $testVar</li>
     <% if (condVar?.trim()) { %>
-    <li>Var Value: $condVar</li>
+    <li><b>Var Value</b>: $condVar</li>
     <% } %>
 </ul>
 </body>

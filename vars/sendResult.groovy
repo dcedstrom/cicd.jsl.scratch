@@ -3,7 +3,7 @@ def call(Map config) {
     def rawBody = libraryResource 'io/venerated/templates/build-results.html'
     def binding = [
             applicationName: env.JOB_BASE_NAME,
-            sourceBranch   : env.GIT_BRANCH,
+            sourceBranch   : env.BRANCH_NAME,
             buildNumber    : env.BUILD_NUMBER,
             userName       : currentBuild.getBuildCauses()[0].userId,
             buildUrl       : env.BUILD_URL,
