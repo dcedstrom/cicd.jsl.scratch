@@ -1,4 +1,4 @@
-def call(Map config) {
+def call(Map config, script) {
     echo "Param var..."
     try {
         echo "${params.param_var}"
@@ -23,20 +23,19 @@ def call(Map config) {
         echo "Exception ${e}"
     }
 
-    echo "Stage var..."
+    echo "Global var..."
     try {
-        echo "${pipeline_stage_var}"
+        echo "$script.{pipeline_global_var}"
     } catch (e) {
-        echo "Pipeline stage var did not work"
+        echo "Pipeline global var did not work"
         echo "Exception ${e}"
     }
 
-
-    echo "Global var..."
+    echo "Stage var..."
     try {
-        echo "${pipeline_global_var}"
+        echo "${script.pipeline_stage_var}"
     } catch (e) {
-        echo "Pipeline global var did not work"
+        echo "Pipeline stage var did not work"
         echo "Exception ${e}"
     }
 }
