@@ -25,7 +25,7 @@ def call(Map config, script) {
 
     echo "Global var..."
     try {
-        echo "$script.{pipeline_global_var}"
+        echo "${this.binding.variables['pipeline_global_var']}"
     } catch (e) {
         echo "Pipeline global var did not work"
         echo "Exception ${e}"
