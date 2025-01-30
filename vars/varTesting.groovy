@@ -1,4 +1,4 @@
-def Call(Map config) {
+def call(Map config) {
     echo "Param var..."
     try {
         echo "${params.param_var}"
@@ -11,7 +11,7 @@ def Call(Map config) {
     try {
         echo "${config.config_var}"
     } catch (e) {
-        echo "COnfig var did not work"
+        echo "Config var did not work"
         echo "Exception ${e}"
     }
 
