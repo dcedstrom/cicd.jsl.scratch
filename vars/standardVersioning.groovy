@@ -47,7 +47,7 @@ def call(Map config) {
     println "Using Version ${releaseVersion}"
 
     // Update version file + Git
-    sshagent([config.gitCredentials]) {
+    withCredentials([gitUsernamePassword(credentialsId: config.gitCredentials)]) {
         if (config.language == "python") {
             sh(script: "echo \"__version__ = '${releaseVersion}'\" > version.py", returnStdout: true)
             sh(script: "git add version.py", returnStdout: true)
