@@ -51,6 +51,10 @@ def call(Map config) {
         sh 'git config user.name "Jenkins CICD"'
         sh 'git config user.email "cicd@venerated.io"'
 
+        sh(script: "git checkout ${params.git_branch}", returnStdout: true)
+        sh(script: "git pull", returnStdout: true)
+
+
         if (config.language == "python") {
             sh(script: "echo \"__version__ = '${releaseVersion}'\" > version.py", returnStdout: true)
             sh(script: "git add version.py", returnStdout: true)
@@ -67,8 +71,6 @@ def call(Map config) {
             sh(script: "git commit -m 'JENKINS: setting version in pom to ${releaseVersion}'", returnStdout: true)
         }
 
-        sh(script: "git checkout ${params.git_branch}", returnStdout: true)
-//        sh(script: "git pull", returnStdout: true)
 
 
         sh(script: "git push", returnStdout: true)
