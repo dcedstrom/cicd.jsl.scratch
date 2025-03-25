@@ -68,7 +68,7 @@ def call(Map config) {
         }
 
         sh(script: "git checkout ${params.git_branch}", returnStdout: true)
-        sh(script: "git pull", returnStdout: true)
+//        sh(script: "git pull", returnStdout: true)
 
 
         sh(script: "git push", returnStdout: true)
