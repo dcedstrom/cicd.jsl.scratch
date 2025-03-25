@@ -61,13 +61,15 @@ def call(Map config) {
             sh(script: "git add ${config.packageJsonFolder}/package.json", returnStdout: true)
             sh(script: "git commit -m 'JENKINS: setting version in package.json to ${releaseVersion}'", returnStdout: true)
         } else if (config.language == "java") {
-            sh(script: "git checkout ${params.git_branch}", returnStdout: true)
-            sh(script: "git pull", returnStdout: true)
 
             sh(script: "mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false", returnStdout: true)
             sh(script: "shopt -s globstar && git add **/pom.xml", returnStdout: true)
             sh(script: "git commit -m 'JENKINS: setting version in pom to ${releaseVersion}'", returnStdout: true)
         }
+
+        sh(script: "git checkout ${params.git_branch}", returnStdout: true)
+        sh(script: "git pull", returnStdout: true)
+
 
         sh(script: "git push", returnStdout: true)
 
