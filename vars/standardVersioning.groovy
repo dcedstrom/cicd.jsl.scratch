@@ -48,6 +48,9 @@ def call(Map config) {
 
     // Update version file + Git
     sshagent([config.gitCredentials]) {
+        sh 'git config user.name "Jenkins CICD"'
+        sh 'git config user.email "cicd@venerated.io"'
+
         if (config.language == "python") {
             sh(script: "echo \"__version__ = '${releaseVersion}'\" > version.py", returnStdout: true)
             sh(script: "git add version.py", returnStdout: true)
