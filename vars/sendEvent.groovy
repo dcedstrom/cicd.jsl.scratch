@@ -91,22 +91,27 @@ def call(Map config) {
         usernameVariable: 'DATADOG_API_KEY', 
         passwordVariable: 'DATADOG_APP_KEY')]) {
         
-        def response = httpRequest(
-            url: 'https://api.datadoghq.com/api/v2/events',
-            httpMode: 'POST',
-            customHeaders: [
-                [name: 'Content-Type', value: 'application/json'],
-                [name: 'DD-API-KEY', value: env.DATADOG_API_KEY],
-                [name: 'DD-APPLICATION-KEY', value: env.DATADOG_APP_KEY]
-            ],
-            requestBody: jsonBody
-        )
+        // Create a temporary file to store the JSON payload
+        writeFile file: 'event_payload.json', text: jsonBody
         
-        if (response.status != 202) {
-            echo "Warning: Failed to send event to Datadog. Status: ${response.status}"
-            echo "Response: ${response.content}"
+        // Execute curl command
+        def curlCommand = """
+            curl -X POST 'https://api.datadoghq.com/api/v2/events' \\
+            -H 'Content-Type: application/json' \\
+            -H 'DD-API-KEY: ${env.DATADOG_API_KEY}' \\
+            -H 'DD-APPLICATION-KEY: ${env.DATADOG_APP_KEY}' \\
+            -d @event_payload.json
+        """.stripIndent()
+        
+        def response = sh(script: curlCommand, returnStdout: true)
+        def statusCode = sh(script: "echo \${response} | grep -oP '(?<=HTTP/[0-9.] )[0-9]+'", returnStdout: true).trim()
+        
+        if (statusCode != "202") {
+            echo "Warning: Failed to send event to Datadog. Status: ${statusCode}"
+            echo "Response: ${response}"
         }
-
-        }
-    
+        
+        // Clean up the temporary file
+        sh "rm -f event_payload.json"
+    }
 }
