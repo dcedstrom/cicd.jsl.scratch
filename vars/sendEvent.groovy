@@ -94,24 +94,42 @@ def call(Map config) {
         // Create a temporary file to store the JSON payload
         writeFile file: 'event_payload.json', text: jsonBody
         
-        // Execute curl command
+        // Execute curl command with verbose output and separate headers/body
         def curlCommand = """
-            curl -X POST 'https://api.datadoghq.com/api/v2/events' \\
+            curl -v -X POST 'https://api.datadoghq.com/api/v2/events' \\
             -H 'Content-Type: application/json' \\
             -H 'DD-API-KEY: ${env.DATADOG_API_KEY}' \\
             -H 'DD-APPLICATION-KEY: ${env.DATADOG_APP_KEY}' \\
-            -d @event_payload.json
+            -d @event_payload.json \\
+            -w '\\n%{http_code}\\n%{response_code}\\n' \\
+            -D response_headers.txt \\
+            -o response_body.txt
         """.stripIndent()
         
-        def response = sh(script: curlCommand, returnStdout: true)
-        def statusCode = sh(script: "echo \${response} | grep -oP '(?<=HTTP/[0-9.] )[0-9]+'", returnStdout: true).trim()
+        // Execute curl and capture output
+        def curlOutput = sh(script: curlCommand, returnStdout: true)
+        
+        // Read response files
+        def headers = readFile('response_headers.txt').trim()
+        def body = readFile('response_body.txt').trim()
+        
+        // Clean up temporary files
+        sh "rm -f event_payload.json response_headers.txt response_body.txt"
+        
+        // Parse the last line of curl output for status code
+        def statusCode = curlOutput.trim().split('\n')[-1]
+        
+        // Log detailed information for debugging
+        echo "=== Curl Verbose Output ==="
+        echo curlOutput
+        echo "=== Response Headers ==="
+        echo headers
+        echo "=== Response Body ==="
+        echo body
         
         if (statusCode != "202") {
             echo "Warning: Failed to send event to Datadog. Status: ${statusCode}"
-            echo "Response: ${response}"
+            echo "Full response details have been logged above"
         }
-        
-        // Clean up the temporary file
-        sh "rm -f event_payload.json"
     }
 }
