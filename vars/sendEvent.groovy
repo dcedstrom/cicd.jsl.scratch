@@ -75,7 +75,7 @@ def call(Map config) {
                         type: "service"
                     ],
                     change_metadata: [
-                        user_name: triggeredBy
+                        user_name: triggeredBy,
                         resource_link: env.BUILD_URL
                     ]
                 ]
@@ -86,10 +86,11 @@ def call(Map config) {
     def jsonBody = groovy.json.JsonOutput.toJson(eventData)
 
     // Send event to Datadog using credentials
-    withCredentials([
-        string(credentialsId: 'datadog-api-key', variable: 'DATADOG_API_KEY'),
-        string(credentialsId: 'datadog-app-key', variable: 'DATADOG_APP_KEY')
-    ]) {
+    withCredentials([usernamePassword(
+        credentialsId: 'gga-datadog-events', 
+        usernameVariable: 'DATADOG_API_KEY', 
+        passwordVariable: 'DATADOG_APP_KEY')]) {
+        
         def response = httpRequest(
             url: 'https://api.datadoghq.com/api/v2/events',
             httpMode: 'POST',
@@ -105,5 +106,7 @@ def call(Map config) {
             echo "Warning: Failed to send event to Datadog. Status: ${response.status}"
             echo "Response: ${response.content}"
         }
-    }
+
+        }
+    
 }
