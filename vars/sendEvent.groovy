@@ -39,7 +39,7 @@ def call(Map config) {
         Artifact Source: ${config.artifact_source ?: 'unknown'}
         Artifact URL: ${config.artifact_url ?: 'N/A'}
         Triggered by: ${triggeredBy}
-        Build URL: ${env.BUILD_URL}
+        Build URL: "https://TestUrl"
     """.stripIndent()
 
     def tags = [
@@ -70,10 +70,10 @@ def call(Map config) {
                         name: config.service_name ?: env.JOB_BASE_NAME,
                         type: "configuration"
                     ],
-                    impacted_resources: [
+                    impacted_resources: [[
                         name: config.service_name ?: env.JOB_BASE_NAME,
                         type: "service"
-                    ],
+                    ]],
                     change_metadata: [
                         user_name: triggeredBy,
                         resource_link: env.BUILD_URL
