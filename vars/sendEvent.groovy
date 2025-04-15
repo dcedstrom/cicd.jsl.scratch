@@ -114,7 +114,7 @@ def call(Map config) {
         def body = readFile('response_body.txt').trim()
         
         // Clean up temporary files
-        sh "rm -f event_payload.json response_headers.txt response_body.txt"
+        // sh "rm -f event_payload.json response_headers.txt response_body.txt"
         
         // Parse the last line of curl output for status code
         def statusCode = curlOutput.trim().split('\n')[-1]
