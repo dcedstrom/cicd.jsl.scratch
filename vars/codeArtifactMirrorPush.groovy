@@ -20,16 +20,23 @@ def call(Map config) {
     // Try, if fails log message, send email but don't fail
     // mvn deploy:deploy-file to codedeploy
     // Do this or use env var?
-    def token = genCodeArtifactToken(binding.codeArtifactDomain)
+    def token = genCodeArtifactToken([
+        codeArtifactDomain: binding.codeArtifactDomain,
+        codeArtifactDomainOwner: binding.owner,
+        AWSCredentialName: binding.awsProfile,
+        region: binding.region
+    ])
 
-    withAWS(role: binding.awsProfile, region: binding.awsRegion, useNode: true) {
-        def endpoint = sh(returnStdout: true, script: """
-    aws codeartifact get-repository-endpoint \
-      --domain '${binding.domain}' --domain-owner '${binding.owner}' \
-      --repository '${binding.repo}' --format generic \
-      --query repositoryEndpoint --output text --region '${binding.region}'
-  """).trim().replaceAll('/+\$', '')
-    }
+
+    // TODO: Don't think this is needed since it's done below
+//    withAWS(role: binding.awsProfile, region: binding.awsRegion, useNode: true) {
+//        def endpoint = sh(returnStdout: true, script: """
+//    aws codeartifact get-repository-endpoint \
+//      --domain '${binding.domain}' --domain-owner '${binding.owner}' \
+//      --repository '${binding.repo}' --format generic \
+//      --query repositoryEndpoint --output text --region '${binding.region}'
+//  """).trim().replaceAll('/+\$', '')
+//    }
 
     println "Pushing to CodeArtifact mirror..."
 
