@@ -39,7 +39,7 @@ def call(Map config) {
         Artifact Source: ${config.artifact_source ?: 'unknown'}
         Artifact URL: ${config.artifact_url ?: 'N/A'}
         Triggered by: ${triggeredBy}
-        Build URL: "https://TestUrl"
+        Build URL: ${env.BUILD_URL}
     """.stripIndent()
 
     def tags = [
