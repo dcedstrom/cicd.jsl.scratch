@@ -64,12 +64,21 @@ def call(Map config) {
         // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
 
         withEnv(["CODEARTIFACT_AUTH_TOKEN=${token}"]) {
+//            sh """
+//        mvn -B -DskipTests \
+//          -DaltReleaseDeploymentRepository=codeartifact::default:${caUrl} \
+//          -DaltSnapshotDeploymentRepository=codeartifact::default:${caUrl} \
+//          deploy:deploy-file -Dfile='${artifactFile}' -DpomFile='${pomFile}'
+//      """
             sh """
-        mvn -B -DskipTests \
-          -DaltReleaseDeploymentRepository=codeartifact::default:${caUrl} \
-          -DaltSnapshotDeploymentRepository=codeartifact::default:${caUrl} \
-          deploy:deploy-file -Dfile='${artifactFile}' -DpomFile='${pomFile}'
-      """
+            mvn -B -DskipTests -s "$GLOBAL_MAVEN_SETTINGS" \\
+                deploy:deploy-file \\
+                -Dfile="${artifactFile}" \\
+                -DpomFile="${binding.pom_file}" \\
+                -DrepositoryId=codeartifact \\
+                -Durl="${caUrl}"
+            """
+
         }
         echo "caMirror(java): deployed ${artifactFile} (POM: ${pomFile}) to ${caUrl}"
 
