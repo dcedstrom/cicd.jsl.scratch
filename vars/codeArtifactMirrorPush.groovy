@@ -65,8 +65,8 @@ def call(Map config) {
         //   </server>
         // TODO: This shouldn't be needed?
         // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
-
-        sh """
+        configFileProvider([configFile(fileId: 'global-default-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+            sh """
             mvn -B -DskipTests \\
                 deploy:deploy-file \\
                 -Dfile="${artifactFile}" \\
@@ -74,6 +74,7 @@ def call(Map config) {
                 -DrepositoryId=${binding.settingsRepo} \\
                 -Durl="${caUrl}"
             """
+        }
 
 //        withEnv(["ARTIFACT_TOKEN=${token}"]) {
 //
