@@ -10,7 +10,8 @@ def call(Map config) {
         owner          : config.ca_owner ?: '495599744457',
         region         : config.aws_region ?: 'us-east-2',
         pom_file       : config.pom_file ?: 'pom.xml',
-        awsProfile     : config.aws_profile ?: 'lambda-container-update'
+        awsProfile     : config.aws_profile ?: 'lambda-container-update',
+        settingsRepo   : config.setting_repo ?: 'ven-artifacts-maven-internal'
     ]
 
     def mavenRepo = "maven-internal"
@@ -64,18 +65,13 @@ def call(Map config) {
         // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
 
         withEnv(["CODEARTIFACT_AUTH_TOKEN=${token}"]) {
-//            sh """
-//        mvn -B -DskipTests \
-//          -DaltReleaseDeploymentRepository=codeartifact::default:${caUrl} \
-//          -DaltSnapshotDeploymentRepository=codeartifact::default:${caUrl} \
-//          deploy:deploy-file -Dfile='${artifactFile}' -DpomFile='${pomFile}'
-//      """
+
             sh """
             mvn -B -DskipTests \\
                 deploy:deploy-file \\
                 -Dfile="${artifactFile}" \\
                 -DpomFile="${binding.pom_file}" \\
-                -DrepositoryId=codeartifact \\
+                -DrepositoryId=${binding.settingsRepo} \\
                 -Durl="${caUrl}"
             """
 
