@@ -1,7 +1,5 @@
 def call(Map config) {
 
-    def rawBody = libraryResource 'com/generali/globalassist/templates/build-results.html'
-
     def binding = [
         // TODO: Do this or files? Think it's always one file unless java which
         artifactName   : config.artifact_name, // deploy_package
