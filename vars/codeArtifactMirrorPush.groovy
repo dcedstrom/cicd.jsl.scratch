@@ -2,7 +2,7 @@ def call(Map config) {
 
     def binding = [
         // TODO: Do this or files? Think it's always one file unless java which
-        artifactName   : config.artifact_name, // deploy_package
+        artifactFile   : config.artifact_file, // deploy_package
         serviceName    : config.service_name ?: env.JOB_BASE_NAME,
         version        : config.version,
         serviceLang    : config.svc_lang,
@@ -46,7 +46,7 @@ def call(Map config) {
         // Expect: config.pom_file (pom.xml path), config.artifact_file (jar/war)
         String pomFile      = binding.pomFile
         String artifactFile = binding.artifactFile
-        if (!artifactFile)  error "caMirror(java): artifact_file is required"
+        if (!artifactFile)  error "caMirror(java): artifactFile is required"
         if (!fileExists(pomFile))      error "caMirror(java): pom not found: ${pomFile}"
         if (!fileExists(artifactFile)) error "caMirror(java): artifact not found: ${artifactFile}"
 
