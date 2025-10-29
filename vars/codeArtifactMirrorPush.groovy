@@ -6,9 +6,9 @@ def call(Map config) {
         serviceName    : config.service_name ?: env.JOB_BASE_NAME,
         version        : config.version,
         serviceLang    : config.svc_lang,
-        domain         : config.ca_domain ?: "ven-artifacts",
-        owner          : config.ca_owner ?: "495599744457",
-        region         : config.aws_region ?: "us-east-2",
+        domain         : config.ca_domain ?: 'ven-artifacts',
+        owner          : config.ca_owner ?: '495599744457',
+        region         : config.aws_region ?: 'us-east-2',
         pom_file       : config.pom_file ?: 'pom.xml',
         awsProfile     : config.aws_profile ?: 'lambda-container-update'
     ]
