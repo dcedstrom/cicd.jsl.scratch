@@ -21,12 +21,14 @@ def call(Map config) {
     // Try, if fails log message, send email but don't fail
     // mvn deploy:deploy-file to codedeploy
     // Do this or use env var?
-    def token = genCodeArtifactToken([
+    env.ARTIFACT_TOKEN = genCodeArtifactToken([
         codeArtifactDomain: binding.domain,
         codeArtifactDomainOwner: binding.owner,
         AWSCredentialName: binding.awsProfile,
         aws_region: binding.region
     ])
+
+    echo "Generated token: ${token}"
 
 
     // TODO: Don't think this is needed since it's done below
@@ -64,9 +66,7 @@ def call(Map config) {
         // TODO: This shouldn't be needed?
         // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
 
-        withEnv(["ARTIFACT_TOKEN=${token}"]) {
-
-            sh """
+        sh """
             mvn -B -DskipTests \\
                 deploy:deploy-file \\
                 -Dfile="${artifactFile}" \\
@@ -75,7 +75,17 @@ def call(Map config) {
                 -Durl="${caUrl}"
             """
 
-        }
+//        withEnv(["ARTIFACT_TOKEN=${token}"]) {
+//
+//            sh """
+//            mvn -B -DskipTests \\
+//                deploy:deploy-file \\
+//                -Dfile="${artifactFile}" \\
+//                -DpomFile="${binding.pom_file}" \\
+//                -DrepositoryId=${binding.settingsRepo} \\
+//                -Durl="${caUrl}"
+//            """
+//        }
         echo "caMirror(java): deployed ${artifactFile} (POM: ${pomFile}) to ${caUrl}"
 
     } else {
