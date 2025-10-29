@@ -24,7 +24,7 @@ def call(Map config) {
         codeArtifactDomain: binding.domain,
         codeArtifactDomainOwner: binding.owner,
         AWSCredentialName: binding.awsProfile,
-        region: binding.region
+        aws_region: binding.region
     ])
 
 
