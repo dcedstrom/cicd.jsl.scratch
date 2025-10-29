@@ -52,7 +52,7 @@ def call(Map config) {
 
         // Maven CA URL format:
         // https://{domain}-{owner}.d.codeartifact.{region}.amazonaws.com/maven/{repo}/
-        String caUrl = "https://${config.domain}-${config.owner}.d.codeartifact.${config.region}.amazonaws.com/maven/${mavenRepo}/"
+        String caUrl = "https://${binding.domain}-${binding.owner}.d.codeartifact.${binding.region}.amazonaws.com/maven/${mavenRepo}/"
 
         // need a <server id="codeartifact"> in your global settings.xml, e.g.:
         //   <server>
