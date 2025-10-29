@@ -71,7 +71,7 @@ def call(Map config) {
 //          deploy:deploy-file -Dfile='${artifactFile}' -DpomFile='${pomFile}'
 //      """
             sh """
-            mvn -B -DskipTests -s "$GLOBAL_MAVEN_SETTINGS" \\
+            mvn -B -DskipTests \\
                 deploy:deploy-file \\
                 -Dfile="${artifactFile}" \\
                 -DpomFile="${binding.pom_file}" \\
