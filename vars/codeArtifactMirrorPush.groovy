@@ -72,7 +72,8 @@ def call(Map config) {
                 -Dfile="${artifactFile}" \\
                 -DpomFile="${binding.pom_file}" \\
                 -DrepositoryId=${binding.settingsRepo} \\
-                -Durl="${caUrl}"
+                -Durl="${caUrl}" \\
+                -s $MAVEN_SETTINGS
             """
         }
 
