@@ -13,15 +13,15 @@ def call(Map config) {
         awsProfile     : config.aws_profile ?: 'lambda-container-update'
     ]
 
-    mavenRepo = "maven-internal"
+    def mavenRepo = "maven-internal"
     // All non-java artifacts
-    genericRepo = "generic"
+    def genericRepo = "generic"
 
     // Try, if fails log message, send email but don't fail
     // mvn deploy:deploy-file to codedeploy
     // Do this or use env var?
     def token = genCodeArtifactToken([
-        codeArtifactDomain: binding.codeArtifactDomain,
+        codeArtifactDomain: binding.domain,
         codeArtifactDomainOwner: binding.owner,
         AWSCredentialName: binding.awsProfile,
         region: binding.region
