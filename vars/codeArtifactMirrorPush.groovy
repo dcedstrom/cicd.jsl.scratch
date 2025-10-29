@@ -64,7 +64,7 @@ def call(Map config) {
         // TODO: This shouldn't be needed?
         // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
 
-        withEnv(["CODEARTIFACT_AUTH_TOKEN=${token}"]) {
+        withEnv(["ARTIFACT_TOKEN=${token}"]) {
 
             sh """
             mvn -B -DskipTests \\
