@@ -45,7 +45,7 @@ def call(Map config) {
         // -------- Java (Maven) --------
         // Expect: config.pom_file (pom.xml path), config.artifact_file (jar/war)
         String pomFile      = binding.pomFile
-        String artifactFile = binding.artifactFile
+        String artifactFile = "target/${binding.artifactFile}"
         if (!artifactFile)  error "caMirror(java): artifactFile is required"
         if (!fileExists(pomFile))      error "caMirror(java): pom not found: ${pomFile}"
         if (!fileExists(artifactFile)) error "caMirror(java): artifact not found: ${artifactFile}"
