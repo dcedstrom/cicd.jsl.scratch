@@ -28,8 +28,8 @@ def call(Map config) {
         aws_region: binding.region
     ])
 
-    echo "Generated token: ${token}"
-
+//    echo "Generated token: ${token}"
+      echo "Generatd token: ${env.ARTIFACT_TOKEN}"
 
     // TODO: Don't think this is needed since it's done below
 //    withAWS(role: binding.awsProfile, region: binding.awsRegion, useNode: true) {
