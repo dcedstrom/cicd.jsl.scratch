@@ -44,7 +44,7 @@ def call(Map config) {
     if (binding.serviceLang == 'java') {
         // -------- Java (Maven) --------
         // Expect: config.pom_file (pom.xml path), config.artifact_file (jar/war)
-        String pomFile      = binding.pomFile
+        String pomFile      = binding.pom_file
         String artifactFile = "target/${binding.artifactFile}"
         if (!artifactFile)  error "caMirror(java): artifactFile is required"
         if (!fileExists(pomFile))      error "caMirror(java): pom not found: ${pomFile}"
@@ -65,7 +65,7 @@ def call(Map config) {
 
         withEnv(["CODEARTIFACT_AUTH_TOKEN=${token}"]) {
             sh """
-        mvn -B -s '${settings}' -DskipTests \
+        mvn -B -DskipTests \
           -DaltReleaseDeploymentRepository=codeartifact::default:${caUrl} \
           -DaltSnapshotDeploymentRepository=codeartifact::default:${caUrl} \
           deploy:deploy-file -Dfile='${artifactFile}' -DpomFile='${pomFile}'
