@@ -44,10 +44,7 @@ def call(Map config) {
 
     println "Pushing to CodeArtifact mirror..."
 
-    // TODO: Is there a sensitive option flag for this? They expire quickly but just to be "proper"
     if (binding.serviceLang == 'java') {
-        // -------- Java (Maven) --------
-        // Expect: config.pom_file (pom.xml path), config.artifact_file (jar/war)
         String pomFile      = binding.pom_file
         String artifactFile = "target/${binding.artifactFile}"
         if (!artifactFile)  error "caMirror(java): artifactFile is required"
@@ -111,13 +108,27 @@ def call(Map config) {
 
         echo "caMirror(generic): PUT ${local} -> ${url}"
         // Use Bearer (preferred). Basic 'aws:<token>' also works, but we stick to Bearer.
-        sh """
-      curl -sS -X PUT \\
-        -H 'Authorization: Bearer $ARTIFACT_TOKEN' \\
-        -H 'Content-Type: ${contentType}' \\
-        --upload-file '${local}' \\
-        '${url}'
-    """
+//        sh """
+//      curl -sS -X PUT \\
+//        -H 'Authorization: Bearer $ARTIFACT_TOKEN' \\
+//        -H 'Content-Type: ${contentType}' \\
+//        --upload-file '${local}' \\
+//        '${url}'
+//    """
+        withAWS([credentials: binding.awsProfile, region: 'us-east-2']) {
+            sh """
+              aws codeartifact publish-package-version \\
+                --domain ${binding.domain} \\
+                --domain-owner ${binding.owner} \\
+                --repository ${genericRepo} \\
+                --format generic \\
+                --namespace ${binding.serviceLang} \\
+                --package ${binding.serviceName} \\
+                --package-version ${binding.version} \\
+                --asset-name ${binding.artifactFile} \\
+                --asset-content fileb://${binding.artifactFile}
+        """
+        }
         echo "caMirror(generic): uploaded ${local} to ${url}"
     }
 
