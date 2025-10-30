@@ -117,6 +117,7 @@ def call(Map config) {
 //    """
         withAWS([credentials: binding.awsProfile, region: 'us-east-2']) {
             sh """
+              FILE_HASH=\$(sha256sum ${binding.artifactFile} | awk '{print \$1}')
               aws codeartifact publish-package-version \\
                 --domain ${binding.domain} \\
                 --domain-owner ${binding.owner} \\
@@ -126,7 +127,8 @@ def call(Map config) {
                 --package ${binding.serviceName} \\
                 --package-version ${binding.version} \\
                 --asset-name ${binding.artifactFile} \\
-                --asset-content fileb://${binding.artifactFile}
+                --asset-content fileb://${binding.artifactFile} \\
+                --asset-sha256 \$FILE_HASH
         """
         }
         echo "caMirror(generic): uploaded ${local} to ${url}"
