@@ -77,17 +77,6 @@ def call(Map config) {
             """
         }
 
-//        withEnv(["ARTIFACT_TOKEN=${token}"]) {
-//
-//            sh """
-//            mvn -B -DskipTests \\
-//                deploy:deploy-file \\
-//                -Dfile="${artifactFile}" \\
-//                -DpomFile="${binding.pom_file}" \\
-//                -DrepositoryId=${binding.settingsRepo} \\
-//                -Durl="${caUrl}"
-//            """
-//        }
         echo "caMirror(java): deployed ${artifactFile} (POM: ${pomFile}) to ${caUrl}"
 
     } else {
@@ -97,13 +86,16 @@ def call(Map config) {
         if (!fileExists(local)) error "caMirror(generic): file not found: ${local}"
 
         // Generic repo endpoint is discovered via AWS CLI:
-        String endpoint = sh(returnStdout: true, script: """
+        withAWS([credentials: binding.awsProfile, region: 'us-east-2']) {
+            String endpoint = sh(returnStdout: true, script: """
       aws codeartifact get-repository-endpoint \
         --domain '${binding.domain}' --domain-owner '${binding.owner}' \
         --repository '${genericRepo}' --format generic \
         --query repositoryEndpoint --output text --region '${binding.region}'
     """).trim().replaceAll('/+\$', '')
-        if (!endpoint) error "caMirror(generic): failed to resolve repository endpoint"
+            if (!endpoint) error "caMirror(generic): failed to resolve repository endpoint"
+
+        }
 
         // keep to url safe chars so encoding logic can be omitted
         String dest = binding.dest ?: local.tokenize('/').last()
@@ -119,7 +111,7 @@ def call(Map config) {
         sh """
       set -euo pipefail
       curl -sS -X PUT \\
-        -H 'Authorization: Bearer ${token}' \\
+        -H 'Authorization: Bearer $ARTIFACT_TOKEN' \\
         -H 'Content-Type: ${contentType}' \\
         --upload-file '${local}' \\
         '${url}'
