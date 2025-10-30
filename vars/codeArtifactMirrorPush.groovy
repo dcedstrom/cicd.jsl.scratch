@@ -17,6 +17,7 @@ def call(Map config) {
     def mavenRepo = "maven-internal"
     // All non-java artifacts
     def genericRepo = "generic"
+    def endpoint
 
     // Try, if fails log message, send email but don't fail
     // mvn deploy:deploy-file to codedeploy
@@ -87,13 +88,15 @@ def call(Map config) {
 
         // Generic repo endpoint is discovered via AWS CLI:
         withAWS([credentials: binding.awsProfile, region: 'us-east-2']) {
-            String endpoint = sh(returnStdout: true, script: """
+                endpoint = sh(returnStdout: true, script: """
       aws codeartifact get-repository-endpoint \
         --domain '${binding.domain}' --domain-owner '${binding.owner}' \
         --repository '${genericRepo}' --format generic \
         --query repositoryEndpoint --output text --region '${binding.region}'
     """).trim().replaceAll('/+\$', '')
             if (!endpoint) error "caMirror(generic): failed to resolve repository endpoint"
+
+            echo "Sending to endpoint: ${endpoint}"
 
         }
 
