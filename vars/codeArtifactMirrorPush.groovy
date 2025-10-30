@@ -127,7 +127,7 @@ def call(Map config) {
                 --package ${binding.serviceName} \\
                 --package-version ${binding.version} \\
                 --asset-name ${binding.artifactFile} \\
-                --asset-content fileb://${binding.artifactFile} \\
+                --asset-content ./${binding.artifactFile} \\
                 --asset-sha256 \$FILE_HASH
         """
         }
