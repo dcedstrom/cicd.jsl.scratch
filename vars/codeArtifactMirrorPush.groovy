@@ -112,7 +112,6 @@ def call(Map config) {
         echo "caMirror(generic): PUT ${local} -> ${url}"
         // Use Bearer (preferred). Basic 'aws:<token>' also works, but we stick to Bearer.
         sh """
-      set -euo pipefail
       curl -sS -X PUT \\
         -H 'Authorization: Bearer $ARTIFACT_TOKEN' \\
         -H 'Content-Type: ${contentType}' \\
