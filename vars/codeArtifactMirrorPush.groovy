@@ -83,7 +83,7 @@ def call(Map config) {
     } else {
         // -------- Generic (ZIP) --------
         // Expect: config.local (zip path). Optional: config.dest (key in repo).
-        String local = config.artifact_name
+        String local = binding.artifactFile
         if (!fileExists(local)) error "caMirror(generic): file not found: ${local}"
 
         // Generic repo endpoint is discovered via AWS CLI:
