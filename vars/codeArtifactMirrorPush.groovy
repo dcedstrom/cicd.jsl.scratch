@@ -98,7 +98,7 @@ def call(Map config) {
         }
 
         // keep to url safe chars so encoding logic can be omitted
-        String dest = binding.dest ?: local.tokenize('/').last()
+        String dest = "${binding.serviceName}/${binding.version}/${binding.artifactFile}"
         if (!(dest ==~ /^[A-Za-z0-9._\\/-]+$/)) {
             error "caMirror(generic): dest contains characters that require encoding. " +
                 "Use only letters/digits/._-/ (dest='${dest}')"
