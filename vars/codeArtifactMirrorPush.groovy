@@ -65,8 +65,8 @@ def call(Map config) {
             if (isMultiMod == true) {
                 echo "[caMirror][Java] Multiple modules detected - Rebuilding and pushing to CA to ensure all are available"
                 sh """
-                    ${params.maven_cmd}" -s "\$MAVEN_SETTINGS" \
-                    -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl}
+                    set -euo pipefail
+                    ${params.maven_cmd} -s "\$MAVEN_SETTINGS" -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl}
                 """
 
             } else {
