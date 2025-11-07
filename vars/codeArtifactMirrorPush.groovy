@@ -12,7 +12,7 @@ def call(Map config) {
         pom_file       : config.pom_file ?: 'pom.xml',
         awsProfile     : config.aws_profile ?: 'lambda-container-update',
         settingsRepo   : config.setting_repo ?: 'ven-artifacts-maven-internal',
-        settingsFile   : config.settings_file ?: 'global-settings-xml'
+        settingsFile   : config.settings_file ?: 'global-default-settings-xml'
     ]
 
     def mavenRepo = "maven-internal"
