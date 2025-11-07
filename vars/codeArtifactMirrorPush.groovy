@@ -68,7 +68,7 @@ def call(Map config) {
                 sh "pwd"
                 echo "[caMirror][Java] Multiple modules detected - Rebuilding and pushing to CA to ensure all are available"
                 sh """
-                    set -euo pipefail
+                    set -e
                     ${params.maven_cmd} -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl} -s "\$MAVEN_SETTINGS" 
                 """
 
