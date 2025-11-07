@@ -55,24 +55,34 @@ def call(Map config) {
         // https://{domain}-{owner}.d.codeartifact.{region}.amazonaws.com/maven/{repo}/
         String caUrl = "https://${binding.domain}-${binding.owner}.d.codeartifact.${binding.region}.amazonaws.com/maven/${mavenRepo}/"
 
-        // need a <server id="codeartifact"> in your global settings.xml, e.g.:
-        //   <server>
-        //     <id>codeartifact</id>
-        //     <username>aws</username>
-        //     <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
-        //   </server>
-        // TODO: This shouldn't be needed?
-        // String settings = config.maven_settings ?: (env.GLOBAL_MAVEN_SETTINGS ?: '~/.m2/settings.xml')
         configFileProvider([configFile(fileId: 'global-default-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-            sh """
-            mvn -B -DskipTests \\
-                deploy:deploy-file \\
-                -Dfile="${artifactFile}" \\
-                -DpomFile="${binding.pom_file}" \\
-                -DrepositoryId=${binding.settingsRepo} \\
-                -Durl="${caUrl}" \\
-                -s $MAVEN_SETTINGS
-            """
+
+            def isMultiMod = (sh(returnStatus: true, script: """
+                set -e
+                grep -q '<modules>' '${binding.pom_file}'
+            """) == 0)
+
+            if (isMultiMod == true) {
+                echo "[caMirror][Java] Multiple modules detected - Rebuilding and pushing to CA to ensure all are available"
+                sh """
+                    ${params.maven_cmd}" -s "\$MAVEN_SETTINGS" \
+                    -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl}
+                """
+
+            } else {
+                echo "[caMirror][Java] Standard repo structure, mirroring with deploy file"
+
+                sh """
+                mvn -B -DskipTests \\
+                    deploy:deploy-file \\
+                    -Dfile="${artifactFile}" \\
+                    -DpomFile="${binding.pom_file}" \\
+                    -DrepositoryId=${binding.settingsRepo} \\
+                    -Durl="${caUrl}" \\
+                    -s $MAVEN_SETTINGS
+                """
+            }
+
         }
 
         echo "caMirror(java): deployed ${artifactFile} (POM: ${pomFile}) to ${caUrl}"
@@ -107,14 +117,8 @@ def call(Map config) {
         String url = "${endpoint}/${dest}"
 
         echo "caMirror(generic): PUT ${local} -> ${url}"
-        // Use Bearer (preferred). Basic 'aws:<token>' also works, but we stick to Bearer.
-//        sh """
-//      curl -sS -X PUT \\
-//        -H 'Authorization: Bearer $ARTIFACT_TOKEN' \\
-//        -H 'Content-Type: ${contentType}' \\
-//        --upload-file '${local}' \\
-//        '${url}'
-//    """
+
+
         withAWS([credentials: binding.awsProfile, region: 'us-east-2']) {
             sh """
               FILE_HASH=\$(sha256sum ${binding.artifactFile} | awk '{print \$1}')
