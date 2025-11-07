@@ -11,7 +11,8 @@ def call(Map config) {
         region         : config.aws_region ?: 'us-east-2',
         pom_file       : config.pom_file ?: 'pom.xml',
         awsProfile     : config.aws_profile ?: 'lambda-container-update',
-        settingsRepo   : config.setting_repo ?: 'ven-artifacts-maven-internal'
+        settingsRepo   : config.setting_repo ?: 'ven-artifacts-maven-internal',
+        settingsFile   : config.settings_file ?: 'global-settings-xml'
     ]
 
     def mavenRepo = "maven-internal"
@@ -55,7 +56,7 @@ def call(Map config) {
         // https://{domain}-{owner}.d.codeartifact.{region}.amazonaws.com/maven/{repo}/
         String caUrl = "https://${binding.domain}-${binding.owner}.d.codeartifact.${binding.region}.amazonaws.com/maven/${mavenRepo}/"
 
-        configFileProvider([configFile(fileId: 'global-default-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+        configFileProvider([configFile(fileId: binding.settingsFile, variable: 'MAVEN_SETTINGS')]) {
 
             def isMultiMod = (sh(returnStatus: true, script: """
                 set -e
@@ -66,7 +67,7 @@ def call(Map config) {
                 echo "[caMirror][Java] Multiple modules detected - Rebuilding and pushing to CA to ensure all are available"
                 sh """
                     set -euo pipefail
-                    ${params.maven_cmd} -s "\$MAVEN_SETTINGS" -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl}
+                    ${params.maven_cmd} -DaltDeploymentRepository=${binding.settingsRepo}::default::${caUrl} -s "\$MAVEN_SETTINGS" 
                 """
 
             } else {
