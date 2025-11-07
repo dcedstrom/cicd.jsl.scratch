@@ -50,7 +50,6 @@ def call(Map config) {
         String artifactFile = "target/${binding.artifactFile}"
         if (!artifactFile)  error "caMirror(java): artifactFile is required"
         if (!fileExists(pomFile))      error "caMirror(java): pom not found: ${pomFile}"
-        if (!fileExists(artifactFile)) error "caMirror(java): artifact not found: ${artifactFile}"
 
         // Maven CA URL format:
         // https://{domain}-{owner}.d.codeartifact.{region}.amazonaws.com/maven/{repo}/
@@ -58,12 +57,15 @@ def call(Map config) {
 
         configFileProvider([configFile(fileId: binding.settingsFile, variable: 'MAVEN_SETTINGS')]) {
 
+            sh "pwd"
             def isMultiMod = (sh(returnStatus: true, script: """
                 set -e
+                pwd
                 grep -q '<modules>' '${binding.pom_file}'
             """) == 0)
 
             if (isMultiMod == true) {
+                sh "pwd"
                 echo "[caMirror][Java] Multiple modules detected - Rebuilding and pushing to CA to ensure all are available"
                 sh """
                     set -euo pipefail
@@ -72,6 +74,7 @@ def call(Map config) {
 
             } else {
                 echo "[caMirror][Java] Standard repo structure, mirroring with deploy file"
+                if (!fileExists(artifactFile)) error "caMirror(java): artifact not found: ${artifactFile}"
 
                 sh """
                 mvn -B -DskipTests \\
