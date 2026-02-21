@@ -10,7 +10,7 @@ def call(Map config) {
 
     def files = pat ? findFiles(glob: pat).findAll { !it.directory }.collect { it.path } : []
 
-    def boundary = "jenkins_${UUID.randomUUID().toString().replace('-','')}"
+    def boundary = "jenkins_${UUID.randomUUID().toString().replace('-', '')}"
     def nl = "\r\n"
 
     def sb = new StringBuilder()
@@ -29,7 +29,7 @@ def call(Map config) {
     // Attachments
     files.each { path ->
         def name = path.tokenize('/').last()
-        def bytes = readFile(file: path, encoding: "Base64") // Jenkins: returns base64 of file
+        def bytes = readFile(file: path, encoding: "Base64") // Jenkins: returns base64 of file contents
         sb << "--${boundary}${nl}"
         sb << "Content-Type: application/octet-stream; name=\"${name}\"${nl}"
         sb << "Content-Disposition: attachment; filename=\"${name}\"${nl}"
@@ -39,15 +39,22 @@ def call(Map config) {
 
     sb << "--${boundary}--${nl}"
 
-    // SES expects the *entire* raw message as a blob; with AWS CLI v2 this is easiest as base64 in JSON.
+    // Base64-encode the entire RFC822 message for SESv2 Raw content
     def rawB64 = sb.toString().bytes.encodeBase64().toString()
-    writeJSON file: "ses_raw.json", json: [ RawMessage: [ Data: rawB64 ] ]
+
+    def payload = [
+        FromEmailAddress: from,
+        Destination     : [ ToAddresses: to ],
+        Content         : [ Raw: [ Data: rawB64 ] ]
+    ]
+
+    writeJSON file: "sesMail.json", json: payload
 
     try {
-        withAWS([credentials: config.awsCreds, roleAccount: config.sesAcctNum, region: config.awsRegion ?: "us-west-2", useNode: true]) {
-            sh "aws ses send-raw-email --cli-binary-format raw-in-base64-out --raw-message file://ses_raw.json"
+        withAWS([credentials: config.awsCreds, roleAccount: config.sesAcctNum, region: config.awsRegion ?: "us-west-2"]) {
+            sh "aws sesv2 send-email --cli-input-json file://sesMail.json"
         }
     } finally {
-        sh "rm -f ses_raw.json"
+        sh "rm -f sesMail.json"
     }
 }
