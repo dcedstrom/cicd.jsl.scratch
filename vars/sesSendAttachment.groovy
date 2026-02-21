@@ -44,7 +44,7 @@ def call(Map config) {
     writeJSON file: "ses_raw.json", json: [ RawMessage: [ Data: rawB64 ] ]
 
     try {
-        withAWS([role: config.awsRole, roleAccount: config.sesAcctNum, region: config.awsRegion ?: "us-west-2", useNode: true]) {
+        withAWS([credentials: config.awsCreds, roleAccount: config.sesAcctNum, region: config.awsRegion ?: "us-west-2", useNode: true]) {
             sh "aws ses send-raw-email --cli-binary-format raw-in-base64-out --raw-message file://ses_raw.json"
         }
     } finally {
