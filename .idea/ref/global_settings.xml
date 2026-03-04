@@ -1,0 +1,88 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- Credentials for authenticating to CodeArtifact repositories -->
+    <servers>
+        <server>
+            <id>ven-artifacts-maven-internal</id>
+            <username>aws</username>
+            <password>${env.ARTIFACT_TOKEN}</password>
+        </server>
+        <server>
+            <id>ven-artifacts-maven-central-proxy</id>
+            <username>aws</username>
+            <password>${env.ARTIFACT_TOKEN}</password>
+        </server>
+    </servers>
+
+    <!-- Mirrors are *not* used here since we have two separate repos, manual repository list -->
+    <mirrors>
+        <!-- No mirrors defined to allow fine-grained control over internal and central repos
+        separately -->
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>codeartifact-profile</id>
+
+            <repositories>
+                <!-- Internal Company Artifacts -->
+                <repository>
+                    <id>ven-artifacts-maven-internal</id>
+                    <url>https://ven-artifacts-495599744457.d.codeartifact.us-east-2.amazonaws.com/maven/maven-internal/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+
+                <!-- Maven Central Proxy through CodeArtifact -->
+                <repository>
+                    <id>ven-artifacts-maven-central-proxy</id>
+                    <url>https://ven-artifacts-495599744457.d.codeartifact.us-east-2.amazonaws.com/maven/maven-central-proxy/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+
+            <pluginRepositories>
+                <!-- Internal Company Artifacts -->
+                <pluginRepository>
+                    <id>ven-artifacts-maven-internal</id>
+                    <url>https://ven-artifacts-495599744457.d.codeartifact.us-east-2.amazonaws.com/maven/maven-internal/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+
+                <!-- Maven Central Proxy for Plugins -->
+                <pluginRepository>
+                    <id>ven-artifacts-maven-central-proxy</id>
+                    <url>https://ven-artifacts-495599744457.d.codeartifact.us-east-2.amazonaws.com/maven/maven-central-proxy/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>codeartifact-profile</activeProfile>
+    </activeProfiles>
+
+</settings>

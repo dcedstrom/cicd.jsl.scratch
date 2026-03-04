@@ -1,0 +1,37 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCodeArtifactTokenRetrieval",
+            "Effect": "Allow",
+            "Action": [
+                "codeartifact:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowCodeArtifactRepositoryActions",
+            "Effect": "Allow",
+            "Action": [
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:ReadFromRepository",
+                "codeartifact:PublishPackageVersion",
+                "codeartifact:PutPackageMetadata",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:DescribePackageVersion"
+            ],
+            "Resource": [
+                "arn:aws:codeartifact:us-east-2:495599744457:repository/ven-artifact/*"
+            ]
+        },
+        {
+            "Sid": "AllowDomainReadActions",
+            "Effect": "Allow",
+            "Action": [
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:DescribeDomain"
+            ],
+            "Resource": "arn:aws:codeartifact:us-east-2:495599744457:domain/ven-artifact"
+        }
+    ]
+}
